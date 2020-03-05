@@ -170,7 +170,7 @@ Node AA_SIPP::findMin()
 
 void AA_SIPP::addOpen(Node &newNode)
 {
-    auto range = open.get<1>().equal_range(std::tuple<int, int, int>(newNode.i, newNode.j, newNode.interval_id));
+    auto range = open.get<1>().equal_range(boost::make_tuple<int, int, int>(newNode.i, newNode.j, newNode.interval_id));
     auto it = range.first;
     bool dominated = false;
     newNode.open_id = open_id;
@@ -189,7 +189,7 @@ void AA_SIPP::addOpen(Node &newNode)
         else if((newNode.g + getRCost(it->heading, newNode.heading) - it->g) < CN_EPSILON)
         {
             open.get<1>().erase(it);
-            range = open.get<1>().equal_range(std::tuple<int, int, int>(newNode.i, newNode.j, newNode.interval_id));
+            range = open.get<1>().equal_range(boost::make_tuple<int, int, int>(newNode.i, newNode.j, newNode.interval_id));
             it = range.first;
             continue;
             break;
