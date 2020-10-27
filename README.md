@@ -1,11 +1,11 @@
 # SuboptimalSIPP
 
-## Description
-This project contains an implementation of different versions of Bounded Sub-ptimal Safe Interval Path Planning algorithm as described in the [ICAPS 2020 paper](https://aaai.org/ojs/index.php/ICAPS/article/view/6674) ([arXiv version](https://arxiv.org/abs/2006.01195)).
+## Overview
+This project contains an implementation of different versions of Bounded Sub-Optimal Safe Interval Path Planning algorithm as described in the [ICAPS 2020 paper](https://aaai.org/ojs/index.php/ICAPS/article/view/6674) ([arXiv version](https://arxiv.org/abs/2006.01195)).
 
-Technically this project was forked from [AA-SIPP(m) project](https://github.com/PathPlanning/AA-SIPP-m/) and then additional functionality added, i.e. three different suboptimal versions of SIPP were inmplemented: 
-* Weighted SIPP with duplicate states (WSIPPd)
-* Weighted SIPP with re-expansions (WSIPPr) 
+Technically this project was forked from [AA-SIPP(m) project](https://github.com/PathPlanning/AA-SIPP-m/) and then additional functionality was added, i.e. three different suboptimal versions of SIPP were implemented (see the paper for more details): 
+* Weighted SIPP with duplicate states and limited re-expansions (WSIPPd)
+* Weighted SIPP with (unlimited) re-expansions (WSIPPr) 
 * SIPP with FOCAL list (FocalSIPP)
 
 
@@ -43,12 +43,16 @@ git clone https://github.com/PathPlanning/AA-SIPP-m.git
 ```
 or direct downloading.
 
-Built current project using **Qt Creator** or **CMake**. To launch the compiled file you will need to pass input XML file as an argument. Output file for this project will be placed in the same folder as input file and, by default, will be named `_log.xml`. For examlpe, using CMake
+Built current project using **Qt Creator** or **CMake**. For example, using CMake
 ```bash
 cd PATH_TO_THE_PROJECT
 cmake .
 make
 ```
+
+## Running
+Make the algorithm work by launching the built executable with the command line argument specifying the location on the input XML-file that encodes the planning task. The result of planning in the form of the other XML file will appear in the same folder as input file and, by default, will be named `_log.xml`. See more about the input/output files below.
+
 ## Input and Output files
 
 Both files are an XML file with a specific structure.
