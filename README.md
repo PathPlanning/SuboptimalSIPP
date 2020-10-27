@@ -1,22 +1,17 @@
 # SuboptimalSIPP
 
 ## Description
-This project contains an implementation of different versions of Safe Interval Path Planning algorithm that can find bounded-suboptimal solutions. It was forked from [AA-SIPP(m) project](https://github.com/PathPlanning/AA-SIPP-m/). SuboptimallSIPP is mainly focused on planning a bounded-suboptimal plan for a single agent in the environments with dynamic obstacles, but it also supports multi-agent setting. Note that there is no theoretical guarantees in terms of solution cost in the latter case. 
+This project contains an implementation of different versions of Bounded Sub-ptimal Safe Interval Path Planning algorithm as described in the [ICAPS 2020 paper](https://aaai.org/ojs/index.php/ICAPS/article/view/6674) ([arXiv version](https://arxiv.org/abs/2006.01195)).
 
-There were implemented three different suboptimal versions of SIPP: 
-* Weighted SIPP with duplicate states (WdSIPP)
-* Weighted SIPP with re-expansions (WrSIPP) 
+Technically this project was forked from [AA-SIPP(m) project](https://github.com/PathPlanning/AA-SIPP-m/) and then additional functionality added, i.e. three different suboptimal versions of SIPP were inmplemented: 
+* Weighted SIPP with duplicate states (WSIPPd)
+* Weighted SIPP with re-expansions (WSIPPr) 
 * SIPP with FOCAL list (FocalSIPP)
 
 
 Planning is carried out in (x, y, \theta) configuration space. Agents' headings, translating and rotating speeds, sizes are taken into account. Agents are considered to be open disks of predefined radii. Radius of each agent can be specified and can be any positive real number, e.g. some agents can be bigger than the grid cells. They can be smaller as well. "Open disks" means that when the distance between the agent of radius r_1 and the agent of radius r_2 equals r_1 + r_2 no collision occurs, the distance has to be less than r_1 + r_2 for the collision to occur. 
 
 Agents' valid actions are (i) translate (ii) rotate in place (iii) wait in place. Moves' endpoints are tied to the centers of grid cells. Moves can be of arbitrary durations, i.e. the durations are not discretized into timesteps, e.g. duration of the translation action is moving speed (set by the user) times the length of the segment agent is traversing. Inertial effects are neglected so far, i.e. agents accelerate/decelerate instantaneously.
-
-Various techniques that enhance the performance of the prioritized planning are supported:
-- Start Safe Intervals (see [link](http://ifaamas.org/Proceedings/aamas2018/pdfs/p2177.pdf));
-- deterministic re-ordering in case of failure (following the heuristic rule described [here](http://ifaamas.org/Proceedings/aamas2018/pdfs/p2177.pdf));
-- random re-ordering in case of failure.
 
 The instance to be solved (as well as algorithm's options) is supposed to be encoded in XML-file(s) of predefined structure (see __"Input and Output files"__ or [examples](https://github.com/PathPlanning/AA-SIPP-m/tree/master/Instances)) and passed to the solver as command line argument(s). The result (paths and some additional information) is output to the (distinct) XML-file as well.
 
@@ -80,17 +75,15 @@ Input file should contain:
     *  `<row>` &mdash; mandatory tags, each of which describes one line of the grid. Each `row` contains a sequence of "0" and "1" separated by blanks. "0" stands for traversable cell, "1" &mdash; for not traversable (actually any other figure but "0" can be used instead of "1"). Total number of "0" and "1" in each row must be equal to the width of the grid. Total number of rows must be equal to the height of the grid. 
     
 * Mandatory tag `<algorithm>`. It describes the parameters of the algorithm. In cases when some tags, that describes the settings, are not specified or are incorrect the default values are taken.
-    * `<algtype>` &mdash; possible values are `1` - WdSIPP, `2` - WrSIPP, `3` - FocalSIPP. By default the value is `1`.
+    * `<algtype>` &mdash; possible values are `1` - WSIPPd, `2` - WSIPPr, `3` - FocalSIPP. By default the value is `1`.
     * `<weight>` &mdash; possible value is any real number in range `[1;10]`. Defines the weight of heuristic function. By default the value is `1.0`.
     * `<allowanyangle>` &mdash; possible values `true` or `false`. Defines the choice between AA-SIPP and SIPP algorithms. By default the value is `true`.
     * `<connectedness>` &mdash; defines the connectedness of the grid. Possible values: 2(4 neighbors), 3(8 neighbors), 4(16 neighbors) and 5(32 neighbors). By default the value is `2`.
-	* `<prioritization>` &mdash; defines the initial prioitization of the agents. Possible values: `fifo` - priority of agents corresponds to the order of their enumeration in XML file; `shortest_first` - the less the distance between the start and goal locations, the higher the priority of the agent; `longest_first` - the more the distance between the start and goal locations, the higher the priority of the agent; `random` - shuffles the priorities of all agents in a random way. By default the value is `fifo`.
-    * `<rescheduling>` &mdash; defines the possibility of using rescheduling in cases when the algorithm fails to find a solution. Possible values: `none` - rescheduling is disabled; `rulebased` - rises the priority of failed agent to the top; `random` - shuffles the priorities of all agents in a random way. By default the value is `none`.
     * `<timelimit>` &mdash; defines  the amount of time that the algorithm can spend on finding a solution. Can be helpful in cases of using rescheduling. Possible values: `-1` - no limit; `n` - number of seconds (n>0). By default the vaule is `-1`.
     * `<startsafeinterval>` &mdash; defines the size of additional constraints in the start locations of low-prioirity agents. Helps to find a solution for instances with many agents without rescheduling. Possible values: `0` - no startsafeintervals; `n` - the size of constraints, counts in conditional time units. By default the value is `0`.
     * `<planforturns>` &mdash; defines the option of taking into account the headings of agents and the time required to change them. Possible values `true` or `false`. The cost of changing the heading is defined by the attributes `rotationspeed` that were described above. By default the value is `false`.
    * `<waitbeforemove>` &mdash; defines additional delay that each agent performs before starting to move along the next section. Possible values are [0;100]. By default the value is `0`.
-   * `<inflatecollisionintervals>` &mdash; this option increases the time between the moments when the agent and the dynamic obstacles (or high-priority agents) pass through the same areas of the space. Possible values are [0;100]. By default the value is `0`.
+   * `<inflatecollisionintervals>` &mdash; this option increases the time between the moment when the agent and a dynamic obstacle pass through the same location. Possible values are [0;100]. By default the value is `0`.
    
 * Optional tag `<options>`. Options that are not related to search.
     * `<loglevel>` &mdash; defines the level of detalization of log-file. Default value is "1". Possible values:
@@ -128,5 +121,8 @@ If `<loglevel>` has value `1` or `2` the output file will be placed in the same 
 "initial_file_name.xml" -> "initial_file_name_log.xml"
 ```
 In case of using separate input files the output file by default will be named as the task-file, i.e. `task_file_name_log.xml`.
+
+## Multi-agents
+Recall that this project was forked from [AA-SIPP(m) project](https://github.com/PathPlanning/AA-SIPP-m/). A nice by-product of this is that one can run sup-optimal SIPP in the prioritized multi-agent path finding mode. It this case some additional parameters should be set (like specifying other agents' start-goal locations etc.). Refer to the readmi of the original repo to sort it out.
 
 [![Build Status](https://travis-ci.org/PathPlanning/SuboptimalSIPP.svg?branch=master)](https://travis-ci.org/PathPlanning/SuboptimalSIPP)
