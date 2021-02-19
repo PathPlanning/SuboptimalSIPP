@@ -7,6 +7,8 @@
 #include <unordered_map>
 #include "map.h"
 
+#include <ANN.h>
+
 typedef multi_index_container<
         Node,
         indexed_by<
@@ -25,6 +27,12 @@ class Heuristic
     double size;
     Container open;
     std::vector<std::vector<Node>> optimal_paths;
+
+	// k-d-tree variables
+	ANNpoint queryPt;					// query point
+	std::vector<ANNpointArray> dataPts;	// data points for each precomputed path
+	std::vector<ANNkd_tree*> kdTree;	// search structure for each precomputed path
+
     void add_open(Node newNode);
     double dist(const Node& a, const Node& b){ return std::sqrt(pow(a.i - b.i, 2) + pow(a.j - b.j, 2)); }
     Node find_min()
@@ -47,6 +55,13 @@ public:
                 h_values[i][j].resize(agents,-1);
 		}
         optimal_paths.resize(agents);
+
+		if (focaltype == CN_FOCAL_DISTANCE) {
+			// allocate k-d-tree variables
+			queryPt = annAllocPt(2);					// d=2
+			dataPts = std::vector<ANNpointArray>(agents);
+			kdTree = std::vector<ANNkd_tree*>(agents);
+		}
     }
     void findStaticPath(const Map &map, Agent agent)
     {
@@ -84,9 +99,9 @@ public:
                 }
             }
         }
+		std::vector<Node> path;
         if(!open.empty())
-        {
-            std::vector<Node> path;
+		{
             while(curNode.Parent != nullptr)
             {
                 path.insert(path.begin(), curNode);
@@ -95,6 +110,16 @@ public:
             path.insert(path.begin(), curNode);
             optimal_paths[agent.id_num] = path;
         }
+
+		if (focaltype == CN_FOCAL_DISTANCE && path.size() > 0) {
+			// set up k-d-tree
+			dataPts[agent.id_num] = annAllocPts(path.size(), 2);							// d=2
+			for (size_t i = 0; i < path.size(); i++) {
+				dataPts[agent.id_num][i][0] = path[i].i;
+				dataPts[agent.id_num][i][1] = path[i].j;
+			}
+			kdTree[agent.id_num] = new ANNkd_tree(dataPts[agent.id_num], path.size(), 2);	// d=2
+		}
     }
     void count(const Map &map, Agent agent)
 	{
@@ -137,9 +162,9 @@ public:
     double get_value(int i, int j, double g, int agent_id)
     {
         if(focaltype == CN_FOCAL_DISTANCE)
-        {
-            double dist_from_opt = CN_INFINITY;
-            for (auto & t : optimal_paths[agent_id]) {
+		{
+			double dist_from_opt = CN_INFINITY;
+			/*for (auto & t : optimal_paths[agent_id]) {
                 if (t.i == i && t.j == j){
                     return 0.0;
                 }
@@ -147,7 +172,16 @@ public:
                 if (dist < dist_from_opt) {
                     dist_from_opt = dist;
                 }
-            }
+			}*/
+
+			queryPt[0] = i;
+			queryPt[1] = j;
+			ANNidxArray nnIdx = new ANNidx[1];;							// nn indices, k=1
+			kdTree[agent_id]->annkSearch(queryPt, 1, nnIdx, new ANNdist[1], 0);	// k=1, err_bound=0
+			ANNpoint res = dataPts[agent_id][nnIdx[0]];					// convert tree id to coordinates
+			std::pair<float, float> pos = {(float)res[0],(float)res[1]};
+			dist_from_opt = std::sqrt(std::pow(i - pos.first, 2) + std::pow(j - pos.second, 2));
+
             return dist_from_opt;
         }
         else if(focaltype == CN_FOCAL_TIME)

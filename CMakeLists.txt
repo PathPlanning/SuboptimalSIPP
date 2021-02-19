@@ -7,6 +7,11 @@ find_package(Boost COMPONENTS multi_index)
 include_directories( ${Boost_INCLUDE_DIRS} )
 include_directories( "." )
 
+include_directories( "${CMAKE_CURRENT_SOURCE_DIR}/ann_1.1.2/include/ANN" )
+include_directories( "${CMAKE_CURRENT_SOURCE_DIR}/ann_1.1.2/src" )
+
+link_directories( "${CMAKE_CURRENT_SOURCE_DIR}/ann_1.1.2/lib" )
+
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O2 -Wall -Wextra" )
 set( CMAKE_EXE_LINKER_FLAGS "-static -static-libgcc -static-libstdc++" )
 
@@ -39,3 +44,5 @@ set( HEADER_FILES
      constraints.h )
 
 add_executable( SuboptimalSIPP ${SOURCE_FILES} ${HEADER_FILES} )
+
+target_link_libraries( SuboptimalSIPP "${CMAKE_CURRENT_SOURCE_DIR}/ann_1.1.2/lib/libANN.a" )
