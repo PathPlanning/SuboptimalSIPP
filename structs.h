@@ -102,28 +102,28 @@ typedef multi_index_container<
 struct Focal_Elem
 {
     int open_id;
-    int leaps;
-    double g;
-    double F;
-    Focal_Elem(const Node& node, int leaps_ = 0)
+    double focal_h;
+	double g;
+	double F;
+    Focal_Elem(const Node& node, double focal_h_ = 0)
+	{
+		open_id = node.open_id;
+		g = node.g;
+		F = node.F;
+        focal_h = focal_h_;
+	}
+	bool operator<(const Focal_Elem& other) const
     {
-        open_id = node.open_id;
-        g = node.g;
-        F = node.F;
-        leaps = leaps_;
-    }
-    bool operator<(const Focal_Elem& other) const
-    {
-        if(this->leaps == other.leaps)
-        {
-            if(fabs(this->F - other.F) < CN_EPSILON) //breaking-ties
-                return this->g > other.g; //g-max
-            else
-                return this->F < other.F;
-        }
-        else
-            return this->leaps < other.leaps;
-    }
+        if(fabs(this->focal_h - other.focal_h) < CN_EPSILON)
+		{
+			if(fabs(this->F - other.F) < CN_EPSILON) //breaking-ties
+				return this->g > other.g; //g-max
+			else
+				return this->F < other.F;
+		}
+		else
+            return this->focal_h < other.focal_h;
+	}
 };
 
 typedef multi_index_container<

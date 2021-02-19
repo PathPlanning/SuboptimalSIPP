@@ -138,7 +138,7 @@ void AA_SIPP::update_focal(double cost)
     {
         if(it->F > cost*config->focal_weight)
             break;
-        focal.insert(Focal_Elem(*it, focal_heuristic.get_value(it->i, it->j, curagent.id_num)));
+        focal.insert(Focal_Elem(*it, focal_heuristic.get_value(it->i, it->j, it->g, curagent.id_num)));
     }
 }
 
@@ -203,7 +203,7 @@ void AA_SIPP::addOpen(Node &newNode)
             if(open.get<0>().begin()->F*config->focal_weight > newNode.F - CN_EPSILON)
             {
                 Focal_Elem elem(newNode);
-                elem.leaps = focal_heuristic.get_value(newNode.i, newNode.j, curagent.id_num);
+                elem.focal_h = focal_heuristic.get_value(newNode.i, newNode.j, newNode.g, curagent.id_num);
                 focal.insert(elem);
             }
     }
@@ -306,7 +306,7 @@ bool AA_SIPP::changePriorities(int bad_i)
 
 SearchResult AA_SIPP::startSearch(Map &map, Task &task, DynamicObstacles &obstacles)
 {
-    focal_heuristic = Heuristic(config->connectedness);
+    focal_heuristic = Heuristic(config->connectedness, config->focaltype);
     focal_heuristic.init(map.width, map.height, task.getNumberOfAgents());
     for(unsigned int numOfCurAgent = 0; numOfCurAgent < task.getNumberOfAgents(); numOfCurAgent++)
     {

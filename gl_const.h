@@ -66,6 +66,11 @@
 #define CNS_RE_RULED     "rulebased"
 #define CNS_RE_RANDOM    "random"
 
+//focal types
+#define CN_FOCAL_HTG        1
+#define CN_FOCAL_DISTANCE   2
+#define CN_FOCAL_TIME       3
+
 /*
  * XML file tags ---------------------------------------------------------------
  */
@@ -81,6 +86,7 @@
         #define CNS_TAG_ROW                 "row"
     #define CNS_TAG_ALGORITHM               "algorithm"
     #define CNS_TAG_ALGTYPE                 "algtype"
+    #define CNS_TAG_FOCALTYPE               "focaltype"
     #define CNS_TAG_WEIGHT                  "weight"
     #define CNS_TAG_HWEIGHT                 "hweight"
     #define CNS_TAG_CONNECTEDNESS           "connectedness"

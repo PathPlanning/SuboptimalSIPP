@@ -11,6 +11,7 @@ Config::Config()
     rescheduling = CN_DEFAULT_RESCHEDULING;
     planforturns = CN_DEFAULT_PLANFORTURNS;
     additionalwait = CN_DEFAULT_ADDITIONALWAIT;
+    focaltype = CN_FOCAL_HTG;
 }
 
 bool Config::getConfig(const char* fileName)
@@ -220,6 +221,26 @@ bool Config::getConfig(const char* fileName)
         {
             std::cout << "Warning! Wrong value of '"<<CNS_TAG_ALGTYPE<<"' element. Possible variants are 1, 2 or 3 . Its value is set to '"<<CNS_DEFAULT_ALGTYPE<<"'."<<std::endl;
             algtype = CN_DEFAULT_ALGTYPE;
+        }
+    }
+
+    element = algorithm->FirstChildElement(CNS_TAG_FOCALTYPE);
+    if (!element)
+    {
+        std::cout << "Warning! No '"<<CNS_TAG_FOCALTYPE<<"' element found inside '"<<CNS_TAG_ALGORITHM<<"' section. Its value is set to '"<<CN_FOCAL_HTG<<"'."<<std::endl;
+        focaltype = CN_FOCAL_HTG;
+    }
+    else
+    {
+        value = element->GetText();
+        stream<<value;
+        stream>>focaltype;
+        stream.clear();
+        stream.str("");
+        if(focaltype < 1 || focaltype > 3)
+        {
+            std::cout << "Warning! Wrong value of '"<<CNS_TAG_FOCALTYPE<<"' element. Possible variants are 1, 2 or 3 . Its value is set to '"<<CN_FOCAL_HTG<<"'."<<std::endl;
+            focaltype = CN_FOCAL_HTG;
         }
     }
 

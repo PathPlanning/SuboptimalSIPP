@@ -28,6 +28,7 @@ public:
     bool use_focal;
     bool use_likhachev;
     int algtype;
+    int focaltype;
     double weight;
     std::string logfilename;
     std::string logpath;
