@@ -34,6 +34,7 @@ struct SearchResult
     double makespan;
     double flowtime;
     double runtime;
+    double inittime;
     unsigned int agents;
     int agentsSolved;
     int tries;
@@ -47,6 +48,7 @@ struct SearchResult
         flowtime = 0;
         makespan = 0;
         agents = 0;
+        inittime = 0;
     }
 
     ~SearchResult()

@@ -92,10 +92,10 @@ void Mission::startSearch()
 
 void Mission::printSearchResultsToConsole()
 {
-    std::ofstream out("den520d_no_rot_k5_all.txt", std::ios_base::app);
-    out<<sr.runtime<<" "<<sr.makespan<<" "<<sr.pathInfo[0].expanded<<" "<<sr.pathInfo[0].generated<<" "<<sr.pathInfo[0].reexpanded<<" "<<sr.pathInfo[0].reopened<<" "<<sr.pathInfo[0].sections.size()<<"\n";
+    std::ofstream out("results.txt", std::ios_base::app);
+    out<<sr.inittime<<" "<<sr.runtime<<" "<<sr.makespan<<" "<<sr.pathInfo[0].expanded<<" "<<sr.pathInfo[0].generated<<" "<<sr.pathInfo[0].reexpanded<<" "<<sr.pathInfo[0].reopened<<" "<<sr.pathInfo[0].sections.size()<<"\n";
     out.close();
-    std::cout<<sr.runtime<<" "<<sr.makespan<<" "<<sr.pathInfo[0].expanded<<" "<<sr.pathInfo[0].generated<<" "<<sr.pathInfo[0].reexpanded<<" "<<sr.pathInfo[0].reopened<<" "<<sr.pathInfo[0].sections.size()<<"\n";
+    std::cout<<sr.inittime<<" "<<sr.runtime<<" "<<sr.makespan<<" "<<sr.pathInfo[0].expanded<<" "<<sr.pathInfo[0].generated<<" "<<sr.pathInfo[0].reexpanded<<" "<<sr.pathInfo[0].reopened<<" "<<sr.pathInfo[0].sections.size()<<"\n";
     //std::cout<<"Results:\nTask solved: "<<bool(sr.agentsSolved/sr.agents)<<"\nTries: "<<sr.tries<<"\nRuntime: "<<sr.runtime<<"\nAgents solved: "<<sr.agentsSolved<<" ("<<(float)sr.agentsSolved*100/sr.agents<<"%)\nFlowtime: "<<sr.flowtime<<"\nMakespan: "<<sr.makespan<<"\n";
 }
 

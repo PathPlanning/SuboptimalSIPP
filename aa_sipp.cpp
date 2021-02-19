@@ -306,6 +306,15 @@ bool AA_SIPP::changePriorities(int bad_i)
 
 SearchResult AA_SIPP::startSearch(Map &map, Task &task, DynamicObstacles &obstacles)
 {
+
+#ifdef __linux__
+    timeval begin_h, end_h;
+    gettimeofday(&begin_h, NULL);
+#else
+    LARGE_INTEGER begin_h, end_h, freq_h;
+    QueryPerformanceCounter(&begin_h);
+    QueryPerformanceFrequency(&freq_h);
+#endif
     focal_heuristic = Heuristic(config->connectedness, config->focaltype);
     focal_heuristic.init(map.width, map.height, task.getNumberOfAgents());
     for(unsigned int numOfCurAgent = 0; numOfCurAgent < task.getNumberOfAgents(); numOfCurAgent++)
@@ -313,6 +322,15 @@ SearchResult AA_SIPP::startSearch(Map &map, Task &task, DynamicObstacles &obstac
         curagent = task.getAgent(numOfCurAgent);
         focal_heuristic.count(map, curagent);
     }
+
+#ifdef __linux__
+    gettimeofday(&end_h, NULL);
+    sresult.inittime = (end_h.tv_sec - begin_h.tv_sec) + static_cast<double>(end_h.tv_usec - begin_h.tv_usec) / 1000000;
+#else
+    QueryPerformanceCounter(&end_h);
+    sresult.inittime = static_cast<double long>(end_h.QuadPart-begin_h.QuadPart) / freq_h.QuadPart;
+#endif
+
 #ifdef __linux__
     timeval begin, end;
     gettimeofday(&begin, NULL);

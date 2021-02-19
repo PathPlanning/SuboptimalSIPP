@@ -13,7 +13,7 @@ typedef multi_index_container<
         Node,
         indexed_by<
                     //ordered_non_unique<tag<cost>, BOOST_MULTI_INDEX_MEMBER(Open_Elem, double, cost)>,
-                    ordered_non_unique<BOOST_MULTI_INDEX_MEMBER(Node, double, g)>,
+                    ordered_non_unique<identity<Node>>,
                     hashed_unique<BOOST_MULTI_INDEX_MEMBER(Node, int, open_id)>
         >
 > Container;
@@ -78,13 +78,15 @@ public:
             if(curNode.i == agent.goal_i && curNode.j == agent.goal_j)
                 break;
             std::vector<Node> valid_moves = map.getValidMoves(curNode.i, curNode.j, connectedness, size);
+            auto parent = &closed.find(curNode.open_id)->second;
             for(auto move: valid_moves)
             {
                 newNode.i = curNode.i + move.i;
                 newNode.j = curNode.j + move.j;
                 newNode.open_id = newNode.i * map.width + newNode.j;
                 newNode.g = curNode.g + dist(curNode, newNode);
-                newNode.Parent = &closed.find(curNode.open_id)->second;
+                newNode.F = newNode.g + dist(curNode, Node(agent.goal_i, agent.goal_j));
+                newNode.Parent = parent;
                 if(closed.find(newNode.open_id) == closed.end())
                 {
                     auto it = open.get<1>().find(newNode.open_id);
@@ -140,6 +142,7 @@ public:
                     newNode.j = curNode.j + move.j;
                     newNode.open_id = newNode.i * map.width + newNode.j;
                     newNode.g = curNode.g + 1;//dist(curNode, newNode);
+                    newNode.F = newNode.g;
                     if(h_values[newNode.i][newNode.j][agent.id_num] < 0)
                     {
                         auto it = open.get<1>().find(newNode.open_id);
