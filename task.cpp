@@ -127,8 +127,8 @@ bool Task::getTask(const char *fileName)
         }
         k++;
         agents.push_back(agent);
+        break;
     }
-    agents = {agents.back()};
     return true;
 }
 
